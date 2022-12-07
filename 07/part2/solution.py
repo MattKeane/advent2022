@@ -1,6 +1,7 @@
 class Directory():
-    def __init__(self, parent):
+    def __init__(self, parent, name='/'):
         self.parent = parent
+        self.name = name
         self.sub_directories = {}
         self.files = {}
 
@@ -8,7 +9,7 @@ class Directory():
         return str(self.sub_directories | self.files)
         
     def mkdir(self, name):
-        sub_directory = Directory(self)
+        sub_directory = Directory(self, name)
         self.sub_directories[name] = sub_directory
 
     def touch(self, size, name):
@@ -30,6 +31,14 @@ class Directory():
         for _, directory in self.sub_directories.items():
             total += directory.size_of_all_below(max)
         return total
+
+    def get_all_above(self, min):
+        if self.get_size() < min:
+            return []
+        directories = [self.get_size()]
+        for _, directory in self.sub_directories.items():
+            directories.extend(directory.get_all_above(min))
+        return directories
 
 with open('input.txt', 'r') as data:
     lines = data.read().split('\n')
@@ -61,4 +70,6 @@ with open('input.txt', 'r') as data:
                     else:
                         pwd.touch(output[0], output[1])
                     i += 1
-    print(root.size_of_all_below(100000))
+    free_space = 70000000 - root.get_size()
+    needed_space = 30000000 - free_space
+    print(min(root.get_all_above(needed_space)))
