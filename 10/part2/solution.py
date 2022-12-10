@@ -11,7 +11,6 @@ for instruction in instructions:
 lines = []
 for i in range(0, len(registers) - 40, 40):
     new_line = []
-    print('*' * 20)
     for j in range(i, i + 40):
         sprite_pos = registers[j]
         pixel_pos = j - i
