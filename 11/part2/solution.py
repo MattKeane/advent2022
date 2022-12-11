@@ -18,6 +18,8 @@ class Monkey:
         self.if_true = int(notes[4].strip('  If true: throw to monkey '))
         self.if_false = int(notes[5].strip('  If false: throw to monkey '))
         self.inspected = 0
+        Monkey.product_of_divisors *= self.divisible_test
+        Monkey.monkeys.append(self)
 
     def receive(self, item):
         self.items.append(item)
@@ -25,17 +27,16 @@ class Monkey:
     def take_turn(self):
         while len(self.items) > 0:
             self.items[0] = self.operate(self.items[0])
-            if self.items[0] > self.prod_of_divisors:
-                self.items[0] = self.items[0] % self.prod_of_divisors
+            self.items[0] = self.items[0] % self.product_of_divisors
             if self.items[0] % self.divisible_test == 0:
                 self.monkey_group[self.if_true].receive(self.items.popleft())
             else:
                 self.monkey_group[self.if_false].receive(self.items.popleft())
             self.inspected += 1
 
-    @cached_property
-    def prod_of_divisors(self):       
-        return prod([monkey.divisible_test for monkey in monkeys])
+    product_of_divisors = 1
+
+    monkeys = []
 
 with open('input.txt', 'r') as data:
     notes = data.read().split('\n\n')
@@ -46,7 +47,6 @@ for note in notes:
     monkeys.append(Monkey(note, monkeys))
 
 for _ in range(10000):
-    print(_)
     for monkey in monkeys:
         monkey.take_turn()
 
@@ -60,4 +60,6 @@ for monkey in monkeys:
     elif monkey.inspected > second_largest:
         second_largest = monkey.inspected
 
+print(Monkey.product_of_divisors)
+print(monkeys[0].product_of_divisors)
 print(largest * second_largest)
