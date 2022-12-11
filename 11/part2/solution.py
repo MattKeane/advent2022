@@ -3,8 +3,7 @@ from math import prod
 from functools import cached_property
 
 class Monkey:
-    def __init__(self, note, monkey_group):
-        self.monkey_group = monkey_group
+    def __init__(self, note):
         notes = note.split('\n')
         self.items = deque(int(item) for item in notes[1].strip('Starting items: ').split(', '))
         operation_instructions = notes[2].lstrip('Operation: new = old ').split(' ')
@@ -29,9 +28,9 @@ class Monkey:
             self.items[0] = self.operate(self.items[0])
             self.items[0] = self.items[0] % self.product_of_divisors
             if self.items[0] % self.divisible_test == 0:
-                self.monkey_group[self.if_true].receive(self.items.popleft())
+                self.monkeys[self.if_true].receive(self.items.popleft())
             else:
-                self.monkey_group[self.if_false].receive(self.items.popleft())
+                self.monkeys[self.if_false].receive(self.items.popleft())
             self.inspected += 1
 
     product_of_divisors = 1
@@ -41,25 +40,21 @@ class Monkey:
 with open('input.txt', 'r') as data:
     notes = data.read().split('\n\n')
 
-monkeys = []
-
 for note in notes:
-    monkeys.append(Monkey(note, monkeys))
+    Monkey(note)
 
 for _ in range(10000):
-    for monkey in monkeys:
+    for monkey in Monkey.monkeys:
         monkey.take_turn()
 
 largest = 0
 second_largest = 0
 
-for monkey in monkeys:
+for monkey in Monkey.monkeys:
     if monkey.inspected > largest:
         second_largest = largest
         largest = monkey.inspected
     elif monkey.inspected > second_largest:
         second_largest = monkey.inspected
 
-print(Monkey.product_of_divisors)
-print(monkeys[0].product_of_divisors)
 print(largest * second_largest)
