@@ -20,10 +20,6 @@ class Node:
         for neighbor in self.neighbors:
             neighbor.traverse(self.distance + 1)
 
-    def reset(self):
-        self.distance = float('inf')
-        self.visited = False
-
     def __lt__(self, other):
         return self.distance < other.distance
 
@@ -47,7 +43,6 @@ for line in lines:
         if letter == 'S':
             start = new_node
         elif letter == 'E':
-            # end = new_node
             new_node.distance = 0
         elif letter == 'a':
             a_nodes.append(new_node)
